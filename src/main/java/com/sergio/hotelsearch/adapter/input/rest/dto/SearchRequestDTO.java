@@ -1,4 +1,4 @@
-package com.sergio.hotelsearch.domain.adapter.input.rest.dto;
+package com.sergio.hotelsearch.adapter.input.rest.dto;
 import com.sergio.hotelsearc.domain.model.Search;
 
 import java.time.LocalDate;
