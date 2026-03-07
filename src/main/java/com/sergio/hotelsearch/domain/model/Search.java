@@ -1,0 +1,20 @@
+package com.sergio.hotelsearc.domain.model;
+
+import java.time.LocalDate;
+import java.util.List;
+
+public record Search(
+        String searchId,
+        String hotelId,
+        LocalDate checkIn,
+        LocalDate checkOut,
+        List<Integer> ages
+) {
+
+    public Search {
+        if (checkIn.isAfter(checkOut)) {
+            throw new IllegalArgumentException("checkIn must be before checkOut");
+        }
+    }
+
+}
