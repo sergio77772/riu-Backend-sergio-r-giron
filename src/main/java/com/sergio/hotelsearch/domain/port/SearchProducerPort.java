@@ -1,7 +1,7 @@
 package com.sergio.hotelsearch.domain.port;
 
 
-import com.sergio.hotelsearc.domain.model.Search;
+import com.sergio.hotelsearch.domain.model.Search;
 
 public interface SearchProducerPort {
 

@@ -2,7 +2,7 @@ package com.sergio.hotelsearch.adapter.output.kafka;
 
 
 import com.sergio.hotelsearch.domain.port.SearchProducerPort;
-import com.sergio.hotelsearc.domain.model.Search;
+import com.sergio.hotelsearch.domain.model.Search;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 

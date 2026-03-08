@@ -1,4 +1,4 @@
-package com.sergio.hotelsearc.domain.model;
+package com.sergio.hotelsearch.domain.model;
 
 import java.time.LocalDate;
 import java.util.List;

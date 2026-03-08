@@ -1,5 +1,5 @@
 package com.sergio.hotelsearch.adapter.input.rest.dto;
-import com.sergio.hotelsearc.domain.model.Search;
+import com.sergio.hotelsearch.domain.model.Search;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

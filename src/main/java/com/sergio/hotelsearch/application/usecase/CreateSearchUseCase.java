@@ -1,7 +1,7 @@
 package com.sergio.hotelsearch.application.usecase;
 
 import com.sergio.hotelsearch.domain.port.SearchProducerPort;
-import com.sergio.hotelsearc.domain.model.Search;
+import com.sergio.hotelsearch.domain.model.Search;
 import org.springframework.stereotype.Service;
 
 @Service
