@@ -1,11 +1,15 @@
 package com.sergio.hotelsearch.adapter.output.persistence.adapter;
-import com.sergio.hotelsearc.domain.model.Search;
+
+import com.sergio.hotelsearch.domain.model.Search;
 import com.sergio.hotelsearch.adapter.output.persistence.entity.SearchEntity;
 import com.sergio.hotelsearch.adapter.output.persistence.repository.JpaSearchRepository;
 import com.sergio.hotelsearch.domain.port.SearchRepositoryPort;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class SearchRepositoryAdapter implements SearchRepositoryPort {
@@ -19,12 +23,17 @@ public class SearchRepositoryAdapter implements SearchRepositoryPort {
     @Override
     public void save(Search search) {
 
+        String ages = search.ages()
+                .stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+
         SearchEntity entity = new SearchEntity(
                 search.searchId(),
                 search.hotelId(),
                 search.checkIn(),
                 search.checkOut(),
-                search.ages().toString()
+                ages
         );
 
         repository.save(entity);
@@ -34,17 +43,35 @@ public class SearchRepositoryAdapter implements SearchRepositoryPort {
     public Optional<Search> findBySearchId(String searchId) {
 
         return repository.findBySearchId(searchId)
-                .map(entity -> new Search(
-                        entity.getSearchId(),
-                        entity.getHotelId(),
-                        entity.getCheckIn(),
-                        entity.getCheckOut(),
-                        java.util.List.of()
-                ));
+                .map(entity -> {
+
+                    List<Integer> ages = Arrays.stream(entity.getAges().split(","))
+                            .map(Integer::parseInt)
+                            .toList();
+
+                    return new Search(
+                            entity.getSearchId(),
+                            entity.getHotelId(),
+                            entity.getCheckIn(),
+                            entity.getCheckOut(),
+                            ages
+                    );
+                });
     }
 
     @Override
     public long countBySearch(Search search) {
-        return repository.count();
+
+        String ages = search.ages()
+                .stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+
+        return repository.countByHotelIdAndCheckInAndCheckOutAndAges(
+                search.hotelId(),
+                search.checkIn(),
+                search.checkOut(),
+                ages
+        );
     }
 }

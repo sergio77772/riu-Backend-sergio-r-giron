@@ -8,20 +8,29 @@ import java.time.LocalDate;
 public class SearchEntity {
 
     @Id
+    @Column(name = "search_id")
     private String searchId;
 
+    @Column(name = "hotel_id")
     private String hotelId;
 
+    @Column(name = "check_in")
     private LocalDate checkIn;
 
+    @Column(name = "check_out")
     private LocalDate checkOut;
 
+    @Column(name = "ages")
     private String ages;
 
-    public SearchEntity() {}
+    protected SearchEntity() {
+    }
 
-    public SearchEntity(String searchId, String hotelId,
-                        LocalDate checkIn, LocalDate checkOut, String ages) {
+    public SearchEntity(String searchId,
+                        String hotelId,
+                        LocalDate checkIn,
+                        LocalDate checkOut,
+                        String ages) {
         this.searchId = searchId;
         this.hotelId = hotelId;
         this.checkIn = checkIn;
