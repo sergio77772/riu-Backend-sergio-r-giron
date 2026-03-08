@@ -45,8 +45,16 @@ jacoco {
 	toolVersion = "0.8.11"
 }
 
+def excludedClasses = ['**/HotelSearchServiceApplication.class']
+
 jacocoTestReport {
 	dependsOn test
+
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: excludedClasses)
+		}))
+	}
 
 	reports {
 		xml.required = true
@@ -55,6 +63,13 @@ jacocoTestReport {
 }
 
 jacocoTestCoverageVerification {
+
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: excludedClasses)
+		}))
+	}
+
 	violationRules {
 		rule {
 			limit {
