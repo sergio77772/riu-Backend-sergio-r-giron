@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface JpaSearchRepository extends JpaRepository<SearchEntity, String> {
 
     Optional<SearchEntity> findBySearchId(String searchId);
+
     long countByHotelIdAndCheckInAndCheckOutAndAges(
             String hotelId,
             LocalDate checkIn,

@@ -43,20 +43,7 @@ public class SearchRepositoryAdapter implements SearchRepositoryPort {
     public Optional<Search> findBySearchId(String searchId) {
 
         return repository.findBySearchId(searchId)
-                .map(entity -> {
-
-                    List<Integer> ages = Arrays.stream(entity.getAges().split(","))
-                            .map(Integer::parseInt)
-                            .toList();
-
-                    return new Search(
-                            entity.getSearchId(),
-                            entity.getHotelId(),
-                            entity.getCheckIn(),
-                            entity.getCheckOut(),
-                            ages
-                    );
-                });
+                .map(this::toDomain);
     }
 
     @Override
@@ -71,6 +58,21 @@ public class SearchRepositoryAdapter implements SearchRepositoryPort {
                 search.hotelId(),
                 search.checkIn(),
                 search.checkOut(),
+                ages
+        );
+    }
+
+    private Search toDomain(SearchEntity entity) {
+
+        List<Integer> ages = Arrays.stream(entity.getAges().split(","))
+                .map(Integer::parseInt)
+                .toList();
+
+        return new Search(
+                entity.getSearchId(),
+                entity.getHotelId(),
+                entity.getCheckIn(),
+                entity.getCheckOut(),
                 ages
         );
     }
