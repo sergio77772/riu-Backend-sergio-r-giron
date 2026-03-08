@@ -22,10 +22,9 @@ public class KafkaSearchConsumer {
 
     @KafkaListener(topics = TOPIC)
     public void consume(Search search) {
-
         log.info("Consumed searchId={} from Kafka", search.searchId());
         Thread.ofVirtual()
-                .name("vt-persist-", search.searchId().hashCode())
+                .name("vt-persist-%s".formatted(search.searchId()))
                 .start(() -> persist(search));
     }
 
