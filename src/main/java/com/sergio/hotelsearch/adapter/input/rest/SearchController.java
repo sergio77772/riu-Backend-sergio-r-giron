@@ -1,9 +1,10 @@
 package com.sergio.hotelsearch.adapter.input.rest;
 
+import com.sergio.hotelsearch.adapter.input.rest.dto.CountResponseDTO;
 import com.sergio.hotelsearch.adapter.input.rest.dto.SearchRequestDTO;
 import com.sergio.hotelsearch.adapter.input.rest.dto.SearchResponseDTO;
-import com.sergio.hotelsearch.application.usecase.CreateSearchUseCase;
 import com.sergio.hotelsearch.application.usecase.CountSearchUseCase;
+import com.sergio.hotelsearch.application.usecase.CreateSearchUseCase;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/search")
 @Tag(name = "Search API", description = "Hotel search operations")
 public class SearchController {
 
@@ -25,12 +25,12 @@ public class SearchController {
     private final CountSearchUseCase countSearchUseCase;
 
     public SearchController(CreateSearchUseCase createSearchUseCase,
-                            CountSearchUseCase countSearchUseCase) {
+            CountSearchUseCase countSearchUseCase) {
         this.createSearchUseCase = createSearchUseCase;
         this.countSearchUseCase = countSearchUseCase;
     }
 
-    @PostMapping
+    @PostMapping("/search")
     @Operation(summary = "Create a hotel search request")
     public SearchResponseDTO search(@Valid @RequestBody SearchRequestDTO request) {
 
@@ -44,15 +44,15 @@ public class SearchController {
     }
 
     @GetMapping("/count")
-    @Operation(summary = "Get number of searches for a given searchId")
-    public long count(@RequestParam String searchId) {
+    @Operation(summary = "Get number of searches matching the given searchId")
+    public CountResponseDTO count(@RequestParam String searchId) {
 
         log.info("Counting searches for searchId={}", searchId);
 
-        long count = countSearchUseCase.execute(searchId);
+        CountSearchUseCase.Result result = countSearchUseCase.execute(searchId);
 
-        log.info("Count result for searchId={} is {}", searchId, count);
+        log.info("Count result for searchId={} is {}", searchId, result.count());
 
-        return count;
+        return CountResponseDTO.from(searchId, result.search(), result.count());
     }
 }

@@ -1,7 +1,7 @@
 package com.sergio.hotelsearch.application.usecase;
 
-import com.sergio.hotelsearch.domain.port.SearchRepositoryPort;
 import com.sergio.hotelsearch.domain.model.Search;
+import com.sergio.hotelsearch.domain.port.SearchRepositoryPort;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,18 +17,21 @@ public class CountSearchUseCase {
         this.repository = repository;
     }
 
-    public long execute(String searchId) {
+    public Result execute(String searchId) {
 
         log.info("Counting searches for searchId={}", searchId);
 
         Search search = repository.findBySearchId(searchId)
-                .orElseThrow(() ->
-                        new IllegalArgumentException("Search not found for id=" + searchId));
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Search not found for id=%s".formatted(searchId)));
 
         long count = repository.countBySearch(search);
 
         log.info("Found {} searches for searchId={}", count, searchId);
 
-        return count;
+        return new Result(search, count);
+    }
+
+    public record Result(Search search, long count) {
     }
 }
