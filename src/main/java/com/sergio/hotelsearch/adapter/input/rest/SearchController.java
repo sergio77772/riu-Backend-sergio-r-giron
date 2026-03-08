@@ -45,7 +45,7 @@ public class SearchController {
 
     @GetMapping("/count")
     @Operation(summary = "Get number of searches matching the given searchId")
-    public CountResponseDTO count(@RequestParam String searchId) {
+    public CountResponseDTO count(@RequestParam("searchId") String searchId) {
 
         log.info("Counting searches for searchId={}", searchId);
 
