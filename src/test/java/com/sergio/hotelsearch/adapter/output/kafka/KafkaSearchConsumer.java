@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -23,18 +24,16 @@ class KafkaSearchConsumerTest {
     private KafkaSearchConsumer consumer;
 
     @Test
-    void shouldPersistSearch() {
+    void shouldPersistSearch() throws InterruptedException {
 
         Search search = new Search(
                 "1",
                 "hotel1",
-                LocalDate.now(),
-                LocalDate.now().plusDays(1),
-                List.of(30)
-        );
+                LocalDate.of(2025, 1, 10),
+                LocalDate.of(2025, 1, 12),
+                List.of(30));
 
         consumer.consume(search);
-
-        verify(repository).save(search);
+        verify(repository, timeout(1000)).save(search);
     }
 }

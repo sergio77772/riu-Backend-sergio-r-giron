@@ -34,8 +34,7 @@ class CountSearchUseCaseTest {
                 "hotel1",
                 LocalDate.of(2025, 1, 10),
                 LocalDate.of(2025, 1, 12),
-                List.of(30)
-        );
+                List.of(30));
     }
 
     @Test
@@ -43,17 +42,22 @@ class CountSearchUseCaseTest {
 
         when(repository.findBySearchId("1")).thenReturn(Optional.of(search));
         when(repository.countBySearch(search)).thenReturn(5L);
+
         CountSearchUseCase.Result result = useCase.execute("1");
         assertAll(
                 () -> assertEquals(5L, result.count()),
                 () -> assertEquals("hotel1", result.search().hotelId()),
-                () -> assertEquals("1", result.search().searchId())
-        );
+                () -> assertEquals("1", result.search().searchId()));
     }
+
     @Test
     void shouldThrowExceptionWhenSearchNotFound() {
+
         when(repository.findBySearchId("999")).thenReturn(Optional.empty());
-        assertThrows(IllegalArgumentException.class,
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
                 () -> useCase.execute("999"));
+        assertEquals("Search not found for id=999", ex.getMessage());
     }
 }

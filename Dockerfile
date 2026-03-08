@@ -5,7 +5,7 @@ COPY . .
 
 RUN gradle clean build -x test
 
-FROM eclipse-temurin:21-jdk
+FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 

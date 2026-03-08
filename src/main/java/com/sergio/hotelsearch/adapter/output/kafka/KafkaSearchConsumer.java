@@ -24,12 +24,15 @@ public class KafkaSearchConsumer {
     public void consume(Search search) {
 
         log.info("Consumed searchId={} from Kafka", search.searchId());
+        Thread.ofVirtual()
+                .name("vt-persist-", search.searchId().hashCode())
+                .start(() -> persist(search));
+    }
 
+    private void persist(Search search) {
         try {
             repository.save(search);
-
             log.debug("Search {} persisted successfully", search.searchId());
-
         } catch (Exception e) {
             log.error("Error persisting search {}", search.searchId(), e);
             throw e;
