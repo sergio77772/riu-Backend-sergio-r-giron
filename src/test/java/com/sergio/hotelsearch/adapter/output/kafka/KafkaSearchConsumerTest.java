@@ -24,14 +24,28 @@ class KafkaSearchConsumerTest {
     private KafkaSearchConsumer consumer;
 
     @Test
-    void shouldPersistSearch() throws InterruptedException {
-
+    void shouldPersistSearch() {
         Search search = new Search(
                 "1",
                 "hotel1",
                 LocalDate.of(2025, 1, 10),
                 LocalDate.of(2025, 1, 12),
                 List.of(30));
+
+        consumer.consume(search);
+        verify(repository, timeout(1000)).save(search);
+    }
+
+    @Test
+    void shouldLogErrorOnException() {
+        Search search = new Search(
+                "2",
+                "hotel2",
+                LocalDate.of(2025, 1, 10),
+                LocalDate.of(2025, 1, 12),
+                List.of(30));
+
+        org.mockito.Mockito.doThrow(new RuntimeException("DB error")).when(repository).save(search);
 
         consumer.consume(search);
         verify(repository, timeout(1000)).save(search);
