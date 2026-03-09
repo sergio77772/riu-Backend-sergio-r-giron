@@ -4,6 +4,10 @@ import com.sergio.hotelsearch.domain.port.SearchProducerPort;
 import com.sergio.hotelsearch.domain.model.Search;
 import org.springframework.stereotype.Service;
 
+/**
+ * Use case responsible for creating a hotel search and publishing it to Kafka.
+ * Generates the searchId without database access (UUID).
+ */
 @Service
 public class CreateSearchUseCase {
 

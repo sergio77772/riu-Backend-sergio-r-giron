@@ -6,6 +6,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+/**
+ * Use case responsible for counting how many identical searches exist.
+ * Two searches are identical if they share the same hotelId, checkIn, checkOut
+ * and ages (order matters).
+ */
+
 @Service
 public class CountSearchUseCase {
 
