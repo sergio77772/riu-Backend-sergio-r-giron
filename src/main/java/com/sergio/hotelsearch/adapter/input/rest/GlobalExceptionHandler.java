@@ -31,6 +31,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DateTimeParseException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleDateTimeParse(DateTimeParseException ex) {
-        return Map.of("error", "Invalid date format. Expected: dd/MM/yyyy. Received: " + ex.getParsedString());
+        return Map.of("error",
+                "Invalid date format. Expected: dd/MM/yyyy. Received: %s".formatted(ex.getParsedString()));
     }
 }
