@@ -1,0 +1,43 @@
+package com.sergio.hotelsearch.application.usecase;
+
+import com.sergio.hotelsearch.domain.model.Search;
+import com.sergio.hotelsearch.domain.port.SearchRepositoryPort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+/**
+ * Use case responsible for counting how many identical searches exist.
+ * Two searches are identical if they share the same hotelId, checkIn, checkOut
+ * and ages (order matters).
+ */
+
+@Service
+public class CountSearchUseCase {
+
+    private static final Logger log = LoggerFactory.getLogger(CountSearchUseCase.class);
+
+    private final SearchRepositoryPort repository;
+
+    public CountSearchUseCase(SearchRepositoryPort repository) {
+        this.repository = repository;
+    }
+
+    public Result execute(String searchId) {
+
+        log.info("Counting searches for searchId={}", searchId);
+
+        Search search = repository.findBySearchId(searchId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Search not found for id=%s".formatted(searchId)));
+
+        long count = repository.countBySearch(search);
+
+        log.info("Found {} searches for searchId={}", count, searchId);
+
+        return new Result(search, count);
+    }
+
+    public record Result(Search search, long count) {
+    }
+}
