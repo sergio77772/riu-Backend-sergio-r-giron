@@ -57,17 +57,17 @@ La aplicación soporta dos bases de datos utilizando **Spring Profiles**.
 
 Para ejecutar el proyecto con Oracle se deben realizar los siguientes pasos:
 
-1. En el archivo `docker-compose.yml` descomentar el servicio `oracle`
+1. En el archivo [docker-compose.yml](cci:7://file:///c:/Users/sergi/Documents/GitHub/riu-Backend-sergio-r-giron/docker-compose.yml:0:0-0:0) descomentar el servicio `oracle`
 2. Descomentar la dependencia `oracle: condition: service_healthy`
 3. Cambiar
 
-```
+```yaml
 SPRING_PROFILES_ACTIVE: h2
 ```
 
 por
 
-```
+```yaml
 SPRING_PROFILES_ACTIVE: oracle
 ```
 
@@ -189,7 +189,7 @@ El build falla automáticamente si la cobertura baja del **80%**.
 
 El proyecto sigue una **arquitectura hexagonal**, separando dominio, casos de uso y adaptadores.
 
-```
+```text
 src/main/java/com/sergio/hotelsearch/
 ├── domain
 │   ├── model
