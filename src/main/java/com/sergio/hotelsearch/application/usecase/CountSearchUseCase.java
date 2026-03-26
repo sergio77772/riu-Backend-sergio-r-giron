@@ -1,5 +1,6 @@
 package com.sergio.hotelsearch.application.usecase;
 
+import com.sergio.hotelsearch.domain.exception.SearchNotFoundException;
 import com.sergio.hotelsearch.domain.model.Search;
 import com.sergio.hotelsearch.domain.port.SearchRepositoryPort;
 import org.slf4j.Logger;
@@ -28,9 +29,7 @@ public class CountSearchUseCase {
         log.info("Counting searches for searchId={}", searchId);
 
         Search search = repository.findBySearchId(searchId)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Search not found for id=%s".formatted(searchId)));
-
+                .orElseThrow(() -> new SearchNotFoundException(searchId));
         long count = repository.countBySearch(search);
 
         log.info("Found {} searches for searchId={}", count, searchId);
