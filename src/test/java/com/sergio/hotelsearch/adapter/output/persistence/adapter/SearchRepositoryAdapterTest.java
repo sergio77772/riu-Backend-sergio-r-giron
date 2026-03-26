@@ -36,7 +36,7 @@ class SearchRepositoryAdapterTest {
     @BeforeEach
     void setUp() {
         search = new Search("1", "hotel1", CHECK_IN, CHECK_OUT, List.of(30));
-        entity = new SearchEntity("1", "hotel1", CHECK_IN, CHECK_OUT, "30");
+        entity = new SearchEntity("1", "hotel1", CHECK_IN, CHECK_OUT, List.of(30));
     }
 
     @Test
@@ -47,12 +47,12 @@ class SearchRepositoryAdapterTest {
 
     @Test
     void shouldCountSearch() {
-        when(repository.countByHotelIdAndCheckInAndCheckOutAndAges(any(), any(), any(), any()))
-                .thenReturn(5L);
+        when(repository.findByHotelIdAndCheckInAndCheckOut("hotel1", CHECK_IN, CHECK_OUT))
+                .thenReturn(List.of(entity));
 
         long count = adapter.countBySearch(search);
 
-        assertEquals(5L, count);
+        assertEquals(1L, count);
     }
 
     @Test
