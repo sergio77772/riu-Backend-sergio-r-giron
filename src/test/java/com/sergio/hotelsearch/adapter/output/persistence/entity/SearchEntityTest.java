@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,7 +17,7 @@ class SearchEntityTest {
 
     @BeforeEach
     void setUp() {
-        entity = new SearchEntity("1", "hotel1", CHECK_IN, CHECK_OUT, "30,25");
+        entity = new SearchEntity("1", "hotel1", CHECK_IN, CHECK_OUT, List.of(30, 25)); // ← List, no String
     }
 
     @Test
@@ -26,6 +27,6 @@ class SearchEntityTest {
                 () -> assertEquals("hotel1", entity.getHotelId()),
                 () -> assertEquals(CHECK_IN, entity.getCheckIn()),
                 () -> assertEquals(CHECK_OUT, entity.getCheckOut()),
-                () -> assertEquals("30,25", entity.getAges()));
+                () -> assertEquals(List.of(30, 25), entity.getAges()));
     }
 }
