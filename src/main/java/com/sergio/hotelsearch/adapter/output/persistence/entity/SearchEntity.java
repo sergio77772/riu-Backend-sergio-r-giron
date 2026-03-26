@@ -2,6 +2,7 @@ package com.sergio.hotelsearch.adapter.output.persistence.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "searches")
@@ -20,22 +21,25 @@ public class SearchEntity {
     @Column(name = "check_out")
     private LocalDate checkOut;
 
-    @Column(name = "ages")
-    private String ages;
+    @ElementCollection
+    @CollectionTable(name = "search_ages", joinColumns = @JoinColumn(name = "search_id"))
+    @Column(name = "age")
+    @OrderColumn(name = "age_index")
+    private List<Integer> ages;
 
     protected SearchEntity() {
     }
 
     public SearchEntity(String searchId,
-                        String hotelId,
-                        LocalDate checkIn,
-                        LocalDate checkOut,
-                        String ages) {
+            String hotelId,
+            LocalDate checkIn,
+            LocalDate checkOut,
+            List<Integer> ages) {
         this.searchId = searchId;
         this.hotelId = hotelId;
         this.checkIn = checkIn;
         this.checkOut = checkOut;
-        this.ages = ages;
+        this.ages = List.copyOf(ages);
     }
 
     public String getSearchId() {
@@ -54,7 +58,7 @@ public class SearchEntity {
         return checkOut;
     }
 
-    public String getAges() {
-        return ages;
+    public List<Integer> getAges() {
+        return List.copyOf(ages);
     }
 }

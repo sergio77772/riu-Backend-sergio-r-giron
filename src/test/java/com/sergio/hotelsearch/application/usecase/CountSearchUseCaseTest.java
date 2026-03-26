@@ -1,5 +1,6 @@
 package com.sergio.hotelsearch.application.usecase;
 
+import com.sergio.hotelsearch.domain.exception.SearchNotFoundException;
 import com.sergio.hotelsearch.domain.model.Search;
 import com.sergio.hotelsearch.domain.port.SearchRepositoryPort;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,8 +56,8 @@ class CountSearchUseCaseTest {
 
         when(repository.findBySearchId("999")).thenReturn(Optional.empty());
 
-        IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
+        SearchNotFoundException ex = assertThrows(
+                SearchNotFoundException.class,
                 () -> useCase.execute("999"));
         assertEquals("Search not found for id=999", ex.getMessage());
     }

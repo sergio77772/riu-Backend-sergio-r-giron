@@ -1,8 +1,10 @@
 package com.sergio.hotelsearch.application.usecase;
 
-import com.sergio.hotelsearch.domain.port.SearchProducerPort;
 import com.sergio.hotelsearch.domain.model.Search;
+import com.sergio.hotelsearch.domain.port.SearchProducerPort;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 /**
  * Use case responsible for creating a hotel search and publishing it to Kafka.
@@ -17,10 +19,19 @@ public class CreateSearchUseCase {
         this.searchProducerPort = searchProducerPort;
     }
 
-    public String execute(Search search) {
+    public String execute(CreateSearchCommand command) {
+
+        String searchId = UUID.randomUUID().toString();
+
+        Search search = new Search(
+                searchId,
+                command.hotelId(),
+                command.checkIn(),
+                command.checkOut(),
+                command.ages());
 
         searchProducerPort.publishSearch(search);
 
-        return search.searchId();
+        return searchId;
     }
 }

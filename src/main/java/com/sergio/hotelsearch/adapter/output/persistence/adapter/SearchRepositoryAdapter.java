@@ -6,74 +6,58 @@ import com.sergio.hotelsearch.adapter.output.persistence.repository.JpaSearchRep
 import com.sergio.hotelsearch.domain.port.SearchRepositoryPort;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 public class SearchRepositoryAdapter implements SearchRepositoryPort {
 
-    private final JpaSearchRepository repository;
+        private final JpaSearchRepository repository;
 
-    public SearchRepositoryAdapter(JpaSearchRepository repository) {
-        this.repository = repository;
-    }
+        public SearchRepositoryAdapter(JpaSearchRepository repository) {
+                this.repository = repository;
+        }
 
-    @Override
-    public void save(Search search) {
+        @Override
+        public void save(Search search) {
 
-        String ages = search.ages()
-                .stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(","));
+                SearchEntity entity = new SearchEntity(
+                                search.searchId(),
+                                search.hotelId(),
+                                search.checkIn(),
+                                search.checkOut(),
+                                search.ages()
+                );
 
-        SearchEntity entity = new SearchEntity(
-                search.searchId(),
-                search.hotelId(),
-                search.checkIn(),
-                search.checkOut(),
-                ages
-        );
+                repository.save(entity);
+        }
 
-        repository.save(entity);
-    }
+        @Override
+        public Optional<Search> findBySearchId(String searchId) {
 
-    @Override
-    public Optional<Search> findBySearchId(String searchId) {
+                return repository.findBySearchId(searchId)
+                                .map(this::toDomain);
+        }
 
-        return repository.findBySearchId(searchId)
-                .map(this::toDomain);
-    }
+        @Override
+        public long countBySearch(Search search) {
 
-    @Override
-    public long countBySearch(Search search) {
+                return repository.findByHotelIdAndCheckInAndCheckOut(
+                                search.hotelId(),
+                                search.checkIn(),
+                                search.checkOut())
+                                .stream()
+                                .filter(e -> e.getAges().equals(search.ages()))
+                                .count();
+        }
 
-        String ages = search.ages()
-                .stream()
-                .map(String::valueOf)
-                .collect(Collectors.joining(","));
+        private Search toDomain(SearchEntity entity) {
 
-        return repository.countByHotelIdAndCheckInAndCheckOutAndAges(
-                search.hotelId(),
-                search.checkIn(),
-                search.checkOut(),
-                ages
-        );
-    }
-
-    private Search toDomain(SearchEntity entity) {
-
-        List<Integer> ages = Arrays.stream(entity.getAges().split(","))
-                .map(Integer::parseInt)
-                .toList();
-
-        return new Search(
-                entity.getSearchId(),
-                entity.getHotelId(),
-                entity.getCheckIn(),
-                entity.getCheckOut(),
-                ages
-        );
-    }
+                return new Search(
+                                entity.getSearchId(),
+                                entity.getHotelId(),
+                                entity.getCheckIn(),
+                                entity.getCheckOut(),
+                                List.copyOf(entity.getAges()));
+        }
 }

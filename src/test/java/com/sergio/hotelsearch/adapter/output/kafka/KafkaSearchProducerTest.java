@@ -1,9 +1,10 @@
 package com.sergio.hotelsearch.adapter.output.kafka;
 
+import com.sergio.hotelsearch.adapter.output.kafka.dto.SearchMessageDTO;
 import com.sergio.hotelsearch.domain.model.Search;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -11,30 +12,35 @@ import org.springframework.kafka.core.KafkaTemplate;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class KafkaSearchProducerTest {
 
-    @Mock
-    private KafkaTemplate<String, Search> kafkaTemplate;
+    private static final LocalDate CHECK_IN = LocalDate.of(2025, 1, 10);
+    private static final LocalDate CHECK_OUT = LocalDate.of(2025, 1, 12);
 
-    @InjectMocks
+    @Mock
+    private KafkaTemplate<String, SearchMessageDTO> kafkaTemplate;
+
     private KafkaSearchProducer producer;
+
+    @BeforeEach
+    void setUp() {
+        producer = new KafkaSearchProducer(kafkaTemplate, "hotel_availability_searches");
+    }
 
     @Test
     void shouldSendMessageToKafka() {
 
-        Search search = new Search(
-                "1",
-                "hotel1",
-                LocalDate.now(),
-                LocalDate.now().plusDays(1),
-                List.of(30)
-        );
+        Search search = new Search("1", "hotel1", CHECK_IN, CHECK_OUT, List.of(30));
 
         producer.publishSearch(search);
 
-        verify(kafkaTemplate).send("hotel_availability_searches", search);
+        SearchMessageDTO expectedDto = new SearchMessageDTO(
+                "1", "hotel1", CHECK_IN, CHECK_OUT, List.of(30));
+
+        verify(kafkaTemplate).send(eq("hotel_availability_searches"), eq(expectedDto));
     }
 }

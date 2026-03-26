@@ -1,5 +1,6 @@
 package com.sergio.hotelsearch.adapter.output.kafka;
 
+import com.sergio.hotelsearch.adapter.output.kafka.dto.SearchMessageDTO;
 import com.sergio.hotelsearch.domain.model.Search;
 import com.sergio.hotelsearch.domain.port.SearchRepositoryPort;
 import org.slf4j.Logger;
@@ -12,28 +13,30 @@ public class KafkaSearchConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(KafkaSearchConsumer.class);
 
-    private static final String TOPIC = "hotel_availability_searches";
-
     private final SearchRepositoryPort repository;
 
     public KafkaSearchConsumer(SearchRepositoryPort repository) {
         this.repository = repository;
     }
 
-    @KafkaListener(topics = TOPIC)
-    public void consume(Search search) {
-        log.info("Consumed searchId={} from Kafka", search.searchId());
-        Thread.ofVirtual()
-                .name("vt-persist-%s".formatted(search.searchId()))
-                .start(() -> persist(search));
+    @KafkaListener(topics = "${app.kafka.topic.searches}")
+    public void consume(SearchMessageDTO dto) {
+        log.info("Consumed searchId={} from Kafka", dto.searchId());
+        persist(dto);
     }
 
-    private void persist(Search search) {
+    private void persist(SearchMessageDTO dto) {
         try {
+            Search search = new Search(
+                    dto.searchId(),
+                    dto.hotelId(),
+                    dto.checkIn(),
+                    dto.checkOut(),
+                    dto.ages());
             repository.save(search);
-            log.debug("Search {} persisted successfully", search.searchId());
+            log.debug("Search {} persisted successfully", dto.searchId());
         } catch (Exception e) {
-            log.error("Error persisting search {}", search.searchId(), e);
+            log.error("Error persisting search {}", dto.searchId(), e);
             throw e;
         }
     }

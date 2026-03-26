@@ -1,5 +1,6 @@
 package com.sergio.hotelsearch.domain.model;
 
+import com.sergio.hotelsearch.domain.exception.DomainValidationException;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -26,8 +27,7 @@ class SearchTest {
 
     @Test
     void shouldThrowExceptionIfCheckInAfterCheckOut() {
-
-        assertThrows(IllegalArgumentException.class, () -> new Search("1", "hotel1",
+        assertThrows(DomainValidationException.class, () -> new Search("1", "hotel1",
                 LocalDate.of(2025, 1, 20),
                 LocalDate.of(2025, 1, 10),
                 List.of(30)));
@@ -35,12 +35,25 @@ class SearchTest {
 
     @Test
     void shouldThrowExceptionIfHotelIdIsNull() {
-        assertThrows(IllegalArgumentException.class, () -> new Search("1", null, CHECK_IN, CHECK_OUT, List.of(30)));
+        assertThrows(DomainValidationException.class,
+                () -> new Search("1", null, CHECK_IN, CHECK_OUT, List.of(30)));
     }
 
     @Test
     void shouldThrowExceptionIfHotelIdIsBlank() {
+        assertThrows(DomainValidationException.class,
+                () -> new Search("1", "   ", CHECK_IN, CHECK_OUT, List.of(30)));
+    }
 
-        assertThrows(IllegalArgumentException.class, () -> new Search("1", "   ", CHECK_IN, CHECK_OUT, List.of(30)));
+    @Test
+    void shouldThrowExceptionIfCheckInIsNull() {
+        assertThrows(DomainValidationException.class,
+                () -> new Search("1", "hotel1", null, CHECK_OUT, List.of(30)));
+    }
+
+    @Test
+    void shouldThrowExceptionIfCheckOutIsNull() {
+        assertThrows(DomainValidationException.class,
+                () -> new Search("1", "hotel1", CHECK_IN, null, List.of(30)));
     }
 }

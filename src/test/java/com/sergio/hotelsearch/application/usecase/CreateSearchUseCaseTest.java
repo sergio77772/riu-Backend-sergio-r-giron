@@ -12,7 +12,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.Mockito.verify;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
 class CreateSearchUseCaseTest {
@@ -26,17 +27,15 @@ class CreateSearchUseCaseTest {
     @Test
     void shouldPublishSearch() {
 
-        Search search = new Search(
-                "123",
+        CreateSearchCommand command = new CreateSearchCommand(
                 "hotel1",
                 LocalDate.now(),
                 LocalDate.now().plusDays(2),
-                List.of(30)
-        );
+                List.of(30));
 
-        String id = useCase.execute(search);
+        String id = useCase.execute(command);
 
-        verify(producer).publishSearch(search);
-        assertEquals("123", id);
+        verify(producer).publishSearch(any(Search.class));
+        assertNotNull(id);
     }
 }

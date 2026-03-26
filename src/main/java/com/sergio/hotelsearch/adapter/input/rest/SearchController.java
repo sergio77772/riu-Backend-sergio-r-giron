@@ -36,11 +36,11 @@ public class SearchController {
 
         log.info("Received search request for hotelId={}", request.hotelId());
 
-        String searchId = createSearchUseCase.execute(request.toDomain());
+        String result = createSearchUseCase.execute(request.toCommand());
 
-        log.info("Search created with id={}", searchId);
+        log.info("Search created with id={}", result);
 
-        return new SearchResponseDTO(searchId);
+        return new SearchResponseDTO(result);
     }
 
     @GetMapping("/count")
