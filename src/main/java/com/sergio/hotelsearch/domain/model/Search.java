@@ -22,6 +22,10 @@ public record Search(
             throw new DomainValidationException("hotelId cannot be empty");
         }
 
+        if (checkIn == null || checkOut == null) {
+            throw new DomainValidationException("checkIn and checkOut cannot be null");
+        }
+
         if (checkIn.isAfter(checkOut)) {
             throw new DomainValidationException("checkIn must be before checkOut");
         }

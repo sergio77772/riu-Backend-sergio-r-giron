@@ -4,9 +4,13 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record SearchMessageDTO(
-        String searchId,
-        String hotelId,
-        LocalDate checkIn,
-        LocalDate checkOut,
-        List<Integer> ages) {
+                String searchId,
+                String hotelId,
+                LocalDate checkIn,
+                LocalDate checkOut,
+                List<Integer> ages) {
+
+        public SearchMessageDTO {
+                ages = List.copyOf(ages);
+        }
 }

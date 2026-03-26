@@ -1,8 +1,9 @@
 package com.sergio.hotelsearch.adapter.input.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sergio.hotelsearch.application.usecase.CountSearchUseCase;
 import com.sergio.hotelsearch.application.usecase.CreateSearchUseCase;
+import com.sergio.hotelsearch.domain.exception.DomainValidationException;
+import com.sergio.hotelsearch.domain.exception.SearchNotFoundException;
 import com.sergio.hotelsearch.domain.model.Search;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,33 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(SearchController.class)
 class SearchControllerTest {
 
+        private static final String VALID_BODY = """
+                        {
+                          "hotelId": "hotel1",
+                          "checkIn": "10/01/2025",
+                          "checkOut": "12/01/2025",
+                          "ages": [30]
+                        }
+                        """;
+
+        private static final String INVALID_HOTEL_BODY = """
+                        {
+                          "hotelId": "",
+                          "checkIn": "10/01/2025",
+                          "checkOut": "12/01/2025",
+                          "ages": [30]
+                        }
+                        """;
+
+        private static final String INVERTED_DATES_BODY = """
+                        {
+                          "hotelId": "hotel1",
+                          "checkIn": "12/01/2025",
+                          "checkOut": "10/01/2025",
+                          "ages": [30]
+                        }
+                        """;
+
         @Autowired
         private MockMvc mockMvc;
 
@@ -32,9 +60,6 @@ class SearchControllerTest {
 
         @MockitoBean
         private CountSearchUseCase countSearchUseCase;
-
-        @Autowired
-        private ObjectMapper objectMapper;
 
         private Search search;
 
@@ -50,21 +75,11 @@ class SearchControllerTest {
 
         @Test
         void shouldCreateSearch() throws Exception {
-
                 when(createSearchUseCase.execute(any())).thenReturn("123");
-
-                String body = """
-                                {
-                                  "hotelId": "hotel1",
-                                  "checkIn": "10/01/2025",
-                                  "checkOut": "12/01/2025",
-                                  "ages": [30]
-                                }
-                                """;
 
                 mockMvc.perform(post("/search")
                                 .contentType("application/json")
-                                .content(body))
+                                .content(VALID_BODY))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.searchId").value("123"));
         }
@@ -74,8 +89,7 @@ class SearchControllerTest {
                 when(countSearchUseCase.execute("123"))
                                 .thenReturn(new CountSearchUseCase.Result(search, 10L));
 
-                mockMvc.perform(get("/count")
-                                .param("searchId", "123"))
+                mockMvc.perform(get("/count").param("searchId", "123"))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.searchId").value("123"))
                                 .andExpect(jsonPath("$.count").value(10))
@@ -84,18 +98,31 @@ class SearchControllerTest {
 
         @Test
         void shouldReturnBadRequestWhenBodyIsInvalid() throws Exception {
-                String invalidBody = """
-                                {
-                                  "hotelId": "",
-                                  "checkIn": "10/01/2025",
-                                  "checkOut": "12/01/2025",
-                                  "ages": [30]
-                                }
-                                """;
+                mockMvc.perform(post("/search")
+                                .contentType("application/json")
+                                .content(INVALID_HOTEL_BODY))
+                                .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void shouldReturnNotFoundWhenSearchDoesNotExist() throws Exception {
+                when(countSearchUseCase.execute("999"))
+                                .thenThrow(new SearchNotFoundException("999"));
+
+                mockMvc.perform(get("/count").param("searchId", "999"))
+                                .andExpect(status().isNotFound())
+                                .andExpect(jsonPath("$.error").value("Search not found for id=999"));
+        }
+
+        @Test
+        void shouldReturnBadRequestOnDomainValidation() throws Exception {
+                when(createSearchUseCase.execute(any()))
+                                .thenThrow(new DomainValidationException("checkIn must be before checkOut"));
 
                 mockMvc.perform(post("/search")
                                 .contentType("application/json")
-                                .content(invalidBody))
-                                .andExpect(status().isBadRequest());
+                                .content(INVERTED_DATES_BODY))
+                                .andExpect(status().isBadRequest())
+                                .andExpect(jsonPath("$.error").value("checkIn must be before checkOut"));
         }
 }

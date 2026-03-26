@@ -18,6 +18,9 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class KafkaSearchProducerTest {
 
+    private static final LocalDate CHECK_IN = LocalDate.of(2025, 1, 10);
+    private static final LocalDate CHECK_OUT = LocalDate.of(2025, 1, 12);
+
     @Mock
     private KafkaTemplate<String, SearchMessageDTO> kafkaTemplate;
 
@@ -31,20 +34,12 @@ class KafkaSearchProducerTest {
     @Test
     void shouldSendMessageToKafka() {
 
-        Search search = new Search(
-                "1",
-                "hotel1",
-                LocalDate.now(),
-                LocalDate.now().plusDays(1),
-                List.of(30));
+        Search search = new Search("1", "hotel1", CHECK_IN, CHECK_OUT, List.of(30));
 
         producer.publishSearch(search);
 
         SearchMessageDTO expectedDto = new SearchMessageDTO(
-                "1", "hotel1",
-                LocalDate.now(),
-                LocalDate.now().plusDays(1),
-                List.of(30));
+                "1", "hotel1", CHECK_IN, CHECK_OUT, List.of(30));
 
         verify(kafkaTemplate).send(eq("hotel_availability_searches"), eq(expectedDto));
     }

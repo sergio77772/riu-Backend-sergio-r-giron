@@ -12,4 +12,7 @@ public record CreateSearchCommand(
         LocalDate checkIn,
         LocalDate checkOut,
         List<Integer> ages) {
+    public CreateSearchCommand {
+        ages = List.copyOf(ages);
+    }
 }

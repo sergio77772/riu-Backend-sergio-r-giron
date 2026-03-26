@@ -59,6 +59,6 @@ public class SearchEntity {
     }
 
     public List<Integer> getAges() {
-        return ages;
+        return List.copyOf(ages);
     }
 }

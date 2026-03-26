@@ -1,8 +1,12 @@
 package com.sergio.hotelsearch.adapter.input.rest;
 
+import com.sergio.hotelsearch.domain.exception.DomainValidationException;
+import com.sergio.hotelsearch.domain.exception.SearchNotFoundException;
 import org.junit.jupiter.api.Test;
-import java.time.format.DateTimeParseException;
+
 import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GlobalExceptionHandlerTest {
@@ -10,21 +14,24 @@ class GlobalExceptionHandlerTest {
     private final GlobalExceptionHandler exceptionHandler = new GlobalExceptionHandler();
 
     @Test
-    void shouldHandleIllegalArgumentException() {
-        IllegalArgumentException ex = new IllegalArgumentException("checkIn must be before checkOut");
+    void shouldHandleDomainValidationException() {
+        DomainValidationException ex = new DomainValidationException("checkIn must be before checkOut");
 
-        Map<String, String> response = exceptionHandler.handleIllegalArgument(ex);
+        Map<String, String> response = exceptionHandler.handleDomainValidation(ex);
 
-        assertEquals("checkIn must be before checkOut", response.get("error"));
+        assertAll(
+                () -> assertEquals(1, response.size()),
+                () -> assertEquals("checkIn must be before checkOut", response.get("error")));
     }
 
     @Test
-    void shouldHandleDateTimeParseException() {
-        DateTimeParseException ex = new DateTimeParseException("Text '2025-01-10' could not be parsed at index 0",
-                "2025-01-10", 0);
+    void shouldHandleSearchNotFoundException() {
+        SearchNotFoundException ex = new SearchNotFoundException("999");
 
-        Map<String, String> response = exceptionHandler.handleDateTimeParse(ex);
+        Map<String, String> response = exceptionHandler.handleSearchNotFound(ex);
 
-        assertEquals("Invalid date format. Expected: dd/MM/yyyy. Received: 2025-01-10", response.get("error"));
+        assertAll(
+                () -> assertEquals(1, response.size()),
+                () -> assertEquals("Search not found for id=999", response.get("error")));
     }
 }
