@@ -25,3 +25,8 @@ logging:
   level:
     root: INFO
     com.sergio.hotelsearch: DEBUG
+
+app:
+  kafka:
+    topic:
+      searches: hotel_availability_searches
