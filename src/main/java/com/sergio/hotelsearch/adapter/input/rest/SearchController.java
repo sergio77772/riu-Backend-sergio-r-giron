@@ -15,8 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
 @Tag(name = "Search API", description = "Hotel search operations")
 public class SearchController {
@@ -38,8 +36,7 @@ public class SearchController {
 
         log.info("Received search request for hotelId={}", request.hotelId());
 
-        String searchId = UUID.randomUUID().toString();
-        String result = createSearchUseCase.execute(request.toDomain(searchId));
+        String result = createSearchUseCase.execute(request.toCommand());
 
         log.info("Search created with id={}", result);
 

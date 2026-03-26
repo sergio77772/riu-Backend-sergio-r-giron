@@ -1,7 +1,7 @@
 package com.sergio.hotelsearch.adapter.input.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.sergio.hotelsearch.domain.model.Search;
+import com.sergio.hotelsearch.application.usecase.CreateSearchCommand;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -20,13 +20,7 @@ public record SearchRequestDTO(
 
                 @NotEmpty @Schema(example = "[30, 28, 12]", description = "Edades de los huéspedes") List<Integer> ages) {
 
-        public Search toDomain(String searchId) {
-
-                return new Search(
-                                searchId,
-                                hotelId,
-                                checkIn,
-                                checkOut,
-                                List.copyOf(ages));
+        public CreateSearchCommand toCommand() {
+                return new CreateSearchCommand(hotelId, checkIn, checkOut, List.copyOf(ages));
         }
 }
