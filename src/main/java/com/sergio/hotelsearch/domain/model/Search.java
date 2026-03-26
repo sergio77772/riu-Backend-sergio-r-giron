@@ -1,5 +1,7 @@
 package com.sergio.hotelsearch.domain.model;
 
+import com.sergio.hotelsearch.domain.exception.DomainValidationException;
+
 import java.time.LocalDate;
 import java.util.List;
 
@@ -17,14 +19,13 @@ public record Search(
     public Search {
 
         if (hotelId == null || hotelId.isBlank()) {
-            throw new IllegalArgumentException("hotelId cannot be empty");
+            throw new DomainValidationException("hotelId cannot be empty");
         }
 
         if (checkIn.isAfter(checkOut)) {
-            throw new IllegalArgumentException("checkIn must be before checkOut");
+            throw new DomainValidationException("checkIn must be before checkOut");
         }
 
         ages = List.copyOf(ages);
     }
-
 }
